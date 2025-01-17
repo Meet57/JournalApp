@@ -1,11 +1,13 @@
 package com.meet.myFirstProject.service;
 
 import com.meet.myFirstProject.entity.JournalEntry;
+import com.meet.myFirstProject.entity.User;
 import com.meet.myFirstProject.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -13,6 +15,18 @@ public class JournalEntryService
 {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public void saveEntry(JournalEntry journalEntry, String userName)
+    {
+        journalEntry.setDate(LocalDateTime.now());
+        JournalEntry saved = journalEntryRepository.save(journalEntry);
+        User user = userService.findByUserName(userName);
+        user.getJournalEntries().add(journalEntry);
+        userService.saveEntry(user);
+    }
 
     public void saveEntry(JournalEntry journalEntry)
     {
@@ -31,18 +45,27 @@ public class JournalEntryService
 
     public void updateEntry(JournalEntry journalEntry)
     {
-        if (journalEntryRepository.existsById(journalEntry.getId())) {
+        if (journalEntryRepository.existsById(journalEntry.getId()))
+        {
             journalEntryRepository.save(journalEntry);  // Will update the existing entry
-        } else {
+        }
+        else
+        {
             throw new RuntimeException("Entry not found for id: " + journalEntry.getId());
         }
     }
 
-    public void deleteEntry(ObjectId id)
+    public void deleteEntry(ObjectId id, String userName)
     {
-        if (journalEntryRepository.existsById(id)) {
+        if (journalEntryRepository.existsById(id))
+        {
             journalEntryRepository.deleteById(id);
-        } else {
+            User byUserName = userService.findByUserName(userName);
+            byUserName.getJournalEntries().removeIf(journalEntry -> journalEntry.getId().equals(id));
+            userService.saveEntry(byUserName);
+        }
+        else
+        {
             throw new RuntimeException("Entry not found for id: " + id);
         }
     }

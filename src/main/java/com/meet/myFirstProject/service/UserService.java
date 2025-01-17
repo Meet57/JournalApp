@@ -1,0 +1,60 @@
+package com.meet.myFirstProject.service;
+
+import com.meet.myFirstProject.entity.User;
+import com.meet.myFirstProject.repository.UserRepository;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class UserService
+{
+    @Autowired
+    private UserRepository userRepository;
+
+    public void saveEntry(User userEntry)
+    {
+        userRepository.save(userEntry);
+    }
+
+    public List<User> getAll()
+    {
+        return userRepository.findAll();
+    }
+
+    public User getById(ObjectId id)
+    {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public void updateEntry(User journalEntry)
+    {
+        if (userRepository.existsById(journalEntry.getId()))
+        {
+            userRepository.save(journalEntry);  // Will update the existing entry
+        }
+        else
+        {
+            throw new RuntimeException("Entry not found for id: " + journalEntry.getId());
+        }
+    }
+
+    public void deleteEntry(ObjectId id)
+    {
+        if (userRepository.existsById(id))
+        {
+            userRepository.deleteById(id);
+        }
+        else
+        {
+            throw new RuntimeException("Entry not found for id: " + id);
+        }
+    }
+
+    public User findByUserName(String userName)
+    {
+        return userRepository.findByUserName(userName);
+    }
+}
