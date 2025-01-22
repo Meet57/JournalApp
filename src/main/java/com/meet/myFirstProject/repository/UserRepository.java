@@ -5,8 +5,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository //Not Compulsory
 public interface UserRepository extends MongoRepository<User, ObjectId>
 {
-    User findByUserName(String username);
+    Optional<User> findByUserName(String userName);
 }

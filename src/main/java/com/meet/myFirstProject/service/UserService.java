@@ -4,8 +4,12 @@ import com.meet.myFirstProject.entity.User;
 import com.meet.myFirstProject.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -14,8 +18,17 @@ public class UserService
     @Autowired
     private UserRepository userRepository;
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+//    public void saveEntry(User userEntry)
+//    {
+//        userRepository.save(userEntry);
+//    }
+
     public void saveEntry(User userEntry)
     {
+        userEntry.setPassword(passwordEncoder.encode(userEntry.getPassword()));
+        userEntry.setRoles(List.of("USER"));
         userRepository.save(userEntry);
     }
 
@@ -53,8 +66,8 @@ public class UserService
         }
     }
 
-    public User findByUserName(String userName)
-    {
-        return userRepository.findByUserName(userName);
+    public User findByUserName(String userName) {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userName));
     }
 }
