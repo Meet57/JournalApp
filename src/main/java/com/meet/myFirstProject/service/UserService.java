@@ -9,7 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -20,10 +19,10 @@ public class UserService
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-//    public void saveEntry(User userEntry)
-//    {
-//        userRepository.save(userEntry);
-//    }
+    public void saveUserWithoutChangingPassword(User userEntry)
+    {
+        userRepository.save(userEntry);
+    }
 
     public void saveEntry(User userEntry)
     {
