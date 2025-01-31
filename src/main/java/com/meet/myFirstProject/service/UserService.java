@@ -2,7 +2,10 @@ package com.meet.myFirstProject.service;
 
 import com.meet.myFirstProject.entity.User;
 import com.meet.myFirstProject.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,10 +15,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserService
 {
     @Autowired
     private UserRepository userRepository;
+
+//    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -24,10 +30,24 @@ public class UserService
         userRepository.save(userEntry);
     }
 
-    public void saveEntry(User userEntry)
+    public void saveUser(User userEntry)
+    {
+        try
+        {
+            userEntry.setPassword(passwordEncoder.encode(userEntry.getPassword()));
+            userEntry.setRoles(List.of("USER"));
+            userRepository.save(userEntry);
+        }
+        catch (Exception e)
+        {
+            log.warn(e.getMessage());
+        }
+    }
+
+    public void saveAdmin(User userEntry)
     {
         userEntry.setPassword(passwordEncoder.encode(userEntry.getPassword()));
-        userEntry.setRoles(List.of("USER"));
+        userEntry.setRoles(List.of("ADMIN", "USER"));
         userRepository.save(userEntry);
     }
 
@@ -65,7 +85,8 @@ public class UserService
         }
     }
 
-    public User findByUserName(String userName) {
+    public User findByUserName(String userName)
+    {
         return userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userName));
     }

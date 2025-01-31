@@ -16,7 +16,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController
+{
 
     @Autowired
     private UserService userService;
@@ -27,15 +28,19 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping
-    public List<User> getAllUserEntries() {
+    public List<User> getAllUserEntries()
+    {
         return userService.getAll();
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
-        try {
+    public ResponseEntity<?> updateUser(@RequestBody User user)
+    {
+        try
+        {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
+            if (authentication == null || !authentication.isAuthenticated())
+            {
                 System.out.println("Authentication is null or unauthenticated");
                 return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
             }
@@ -46,8 +51,10 @@ public class UserController {
 
             userInDb.setUserName(user.getUserName());
             userInDb.setPassword(passwordEncoder.encode(user.getPassword()));
-            userService.saveEntry(userInDb);
-        } catch (Exception e) {
+            userService.saveUser(userInDb);
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -56,8 +63,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Boolean> login(@RequestBody User loginRequest) {
-        try {
+    public ResponseEntity<Boolean> login(@RequestBody User loginRequest)
+    {
+        try
+        {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUserName(),
@@ -66,7 +75,9 @@ public class UserController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return ResponseEntity.ok(true);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
     }

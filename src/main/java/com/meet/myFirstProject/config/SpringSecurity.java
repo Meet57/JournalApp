@@ -3,6 +3,7 @@ package com.meet.myFirstProject.config;
 import com.meet.myFirstProject.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 @EnableWebSecurity
+//@Profile("dev") you can make different SpringSecurity and make profile which runs with the dev or prod as you required
 public class SpringSecurity {
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -29,7 +31,7 @@ public class SpringSecurity {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/journal/**").authenticated()
+                                .requestMatchers("/journal/**", "/user/**").authenticated()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .anyRequest().permitAll()
                 ).httpBasic(Customizer.withDefaults())
