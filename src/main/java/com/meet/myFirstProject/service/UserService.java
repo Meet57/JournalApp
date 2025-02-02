@@ -1,5 +1,6 @@
 package com.meet.myFirstProject.service;
 
+import com.meet.myFirstProject.api.response.WeatherResponse;
 import com.meet.myFirstProject.entity.User;
 import com.meet.myFirstProject.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,9 @@
 package com.meet.myFirstProject.controller;
 
+import com.meet.myFirstProject.api.response.WeatherResponse;
 import com.meet.myFirstProject.entity.User;
 import com.meet.myFirstProject.service.UserService;
+import com.meet.myFirstProject.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +23,18 @@ public class UserController
 
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private WeatherService weatherService;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping
-    public List<User> getAllUserEntries()
-    {
-        return userService.getAll();
-    }
+//    @GetMapping
+//    public List<User> getAllUserEntries()
+//    {
+//        return userService.getAll();
+//    }
 
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody User user)
@@ -80,5 +83,20 @@ public class UserController
         {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greetings()
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        WeatherResponse weatherResponse = weatherService.getWeather("Windsor");
+
+        String greetings = "";
+        if(weatherResponse != null)
+        {
+            greetings = ", Weather feels like " + weatherService.getWeather("Windsor").getCurrent().getFeelsLike();
+        }
+
+        return new ResponseEntity<>("Hi " + authentication.getName() + greetings, HttpStatus.OK);
     }
 }
